@@ -11,7 +11,7 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
    sl.registerFactory(() => DebateBloc(sendMessage: sl()));
-   sl.registerSingleton(() => SendmessageUsecase(repository: sl()));
+   sl.registerLazySingleton(() => SendmessageUsecase(repository: sl()));
    sl.registerLazySingleton<CahtRepository>(
       () => ChatRepositoryImpl(datasource: sl())
    );
