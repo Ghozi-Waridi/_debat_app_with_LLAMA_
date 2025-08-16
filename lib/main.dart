@@ -1,5 +1,6 @@
 import 'package:debate_app/features/Debate/presentation/bloc/debate_bloc.dart';
-import 'package:debate_app/features/Debate/presentation/pages/chat_page.dart';
+import 'package:debate_app/features/Topics/presentation/bloc/topics_bloc.dart';
+import 'package:debate_app/features/Topics/presentation/pages/topic_page.dart';
 import 'package:debate_app/injection.dart' as di;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,17 +16,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Debat LLM',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: BlocProvider(
-        create: (context) => di.sl<DebateBloc>(),
-        child: const ChatPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => di.sl<DebateBloc>()),
+        BlocProvider(
+          create: (context) => di.sl<TopicsBloc>()..add(GetTopicsEvent()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Debat LLM',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: TopicPage(),
       ),
     );
   }
 }
-
