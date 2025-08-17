@@ -11,18 +11,24 @@ class ChatRepositoryImpl implements CahtRepository {
   Future<ChatEntity> sendMessage({
     required String prompt,
     int? sessionId,
+    String? topic,
+    String? pihak,
   }) async {
     try {
       final response = await datasource.sendMessage(
         prompt: prompt,
         sessionId: sessionId,
+        topic: topic,
+        pihak: pihak,
       );
 
       if (response.containsKey("response")) {
         final aiResponse = ChatEntity(
           role: 'assistant',
           content: response["response"],
+          sessionID: response["session_id"],
         );
+        // print("AI Response: ${aiResponse.sessionID}");
         return aiResponse;
       } else {
         throw Exception("Response tidak mengandung kunci 'response'");

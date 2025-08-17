@@ -14,7 +14,9 @@ class DebateBloc extends Bloc<DebateEvent, DebateState> {
   DebateBloc({required this.sendMessage}) : super(DebateInitial()) {
     on<SendMessageEvent>((event, emit) async {
       emit(DebateLoading());
-      final userMessage = ChatEntity(role: 'user', content: event.prompt);
+      // print('SessionID : ${currentSessionId}');
+      final userMessage = ChatEntity(role: 'user', content: event.prompt, sessionID: currentSessionId);
+      // print(userMessage);
       messages.add(userMessage);
 
       try{
@@ -22,6 +24,10 @@ class DebateBloc extends Bloc<DebateEvent, DebateState> {
           prompt: event.prompt,
           sessionId: currentSessionId,
         );
+        currentSessionId = aiMessage.sessionID;
+
+        // print("Bloc : ${aiMessage.sessionID}");
+
         messages.add(aiMessage);
 
         emit(DebatLoaded(messages: List.from(messages)));
