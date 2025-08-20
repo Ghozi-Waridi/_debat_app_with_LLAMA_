@@ -2,14 +2,15 @@ import 'package:debate_app/features/Topics/presentation/widgets/skeleton_row.dar
 import 'package:flutter/material.dart';
 
 class LoadingSliverListSkeleton extends StatelessWidget {
-  const LoadingSliverListSkeleton({super.key});
+  final int topicCount;
+  const LoadingSliverListSkeleton({super.key, required this.topicCount});
 
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       sliver: SliverList.separated(
-        itemCount: 6,
+        itemCount: topicCount,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (_, __) => const SkeletonRow(),
       ),

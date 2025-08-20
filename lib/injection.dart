@@ -1,7 +1,8 @@
 import 'package:debate_app/features/Debate/data/datasources/chat_datasource.dart';
 import 'package:debate_app/features/Debate/data/repositories/chat_repository_impl.dart';
 import 'package:debate_app/features/Debate/domain/repositories/chat_repository.dart';
-import 'package:debate_app/features/Debate/domain/usecases/sendMessage_usecase.dart';
+import 'package:debate_app/features/Debate/domain/usecases/create_session_usecase.dart';
+import 'package:debate_app/features/Debate/domain/usecases/send_message_usecase.dart';
 import 'package:debate_app/features/Debate/presentation/bloc/debate_bloc.dart';
 import 'package:debate_app/features/Topics/data/datasources/topic_datasource.dart';
 import 'package:debate_app/features/Topics/data/repositories/topic_repository_impl.dart';
@@ -14,14 +15,16 @@ import 'package:get_it/get_it.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  sl.registerFactory(() => DebateBloc(sendMessage: sl()));
+  // Debate
+  sl.registerFactory(() => DebateBloc(sendMessage: sl(), createSession: sl()));
   sl.registerLazySingleton(() => SendmessageUsecase(repository: sl()));
-  sl.registerLazySingleton<CahtRepository>(
+  sl.registerLazySingleton(() => CreateSessionUsecase(repository: sl()));
+  sl.registerLazySingleton<ChatRepository>(
     () => ChatRepositoryImpl(datasource: sl()),
   );
   sl.registerLazySingleton<ChatDatasource>(() => ChatDatasourceImpl(dio: sl()));
 
-  // topics
+  // Topics
   sl.registerFactory(() => TopicsBloc(getTopicUsecase: sl()));
   sl.registerLazySingleton(() => GetTopicUsecase(repository: sl()));
   sl.registerLazySingleton<TopicRepository>(

@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String _debugBaseUrl = "https://1ed12fef8c2f.ngrok-free.app";
+  static const String _debugBaseUrl = "https://691e544e259a.ngrok-free.app";
   static const String _releaseBaseUrl = "https://your-production-server.com";
 
   static String get baseUrl {
