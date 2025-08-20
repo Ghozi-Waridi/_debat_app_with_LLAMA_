@@ -1,3 +1,4 @@
+import 'package:debate_app/core/theme/color.dart';
 import 'package:flutter/material.dart';
 
 class MessageInputWidget extends StatelessWidget {
@@ -12,30 +13,29 @@ class MessageInputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 20, left: 12, right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, -1),
-          ),
-        ],
+        color: AppColor.background,
+        border: Border(top: BorderSide(color: AppColor.accent)),
       ),
       child: SafeArea(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: TextField(
                 controller: textController,
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
                 decoration: InputDecoration(
-                  hintText: 'Ketik Argument Anda ...',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 18),
+                  hintText: 'Ketik Argument Anda...',
+                  hintStyle: const TextStyle(color: Colors.white70),
                   filled: true,
-                  fillColor: Colors.grey,
+                  fillColor: AppColor.accent,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(50),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -43,8 +43,10 @@ class MessageInputWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            IconButton.filled(
-              style: IconButton.styleFrom(backgroundColor: Colors.blue),
+            IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: AppColor.purpleLight,
+              ),
               icon: const Icon(Icons.send, color: Colors.white),
               onPressed: sendMessage,
             ),

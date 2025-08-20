@@ -1,3 +1,4 @@
+import 'package:debate_app/core/theme/color.dart';
 import 'package:debate_app/features/Debate/domain/entities/chat_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +15,12 @@ class ChatBubbleWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isUserMessage ? Colors.blue : Colors.green,
+          color: isUserMessage ? AppColor.purpleLight : AppColor.accent,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            bottomLeft: isUserMessage ? const Radius.circular(20) : Radius.zero,
-            bottomRight:
-                isUserMessage ? const Radius.circular(20) : Radius.zero,
+            topLeft: isUserMessage ? const Radius.circular(30) : Radius.zero,
+            topRight: isUserMessage ? Radius.zero : const Radius.circular(30),
+            bottomLeft: const Radius.circular(30),
+            bottomRight: const Radius.circular(30),
           ),
         ),
         child: Text(
