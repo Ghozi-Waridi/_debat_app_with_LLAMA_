@@ -1,101 +1,157 @@
+import 'package:debate_app/core/theme/color.dart';
 import 'package:debate_app/features/Debate/domain/entities/chat_entity.dart';
 import 'package:debate_app/features/Debate/presentation/bloc/debate_bloc.dart';
 import 'package:debate_app/features/Debate/presentation/widgets/chat_bubble_widget.dart';
 import 'package:debate_app/features/Debate/presentation/widgets/message_input_widget.dart';
-
+import 'package:debate_app/features/Debate/presentation/widgets/typing_bubble_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final String topic;
+  final String role; // Pro/Kontra
+
+  const ChatPage({super.key, required this.topic, required this.role});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textCtrl = TextEditingController();
+  final ScrollController _scrollCtrl = ScrollController();
+
+  int _lastItemCount = 0;
 
   @override
   void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
+    _textCtrl.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+  void _handleSend() {
+    final text = _textCtrl.text.trim();
+    if (text.isEmpty) return;
+
+    final bloc = context.read<DebateBloc>();
+    if (bloc.currentSessionId == 0) {
+      bloc.add(
+        CreateSessionEvent(
+          prompt: text,
+          topic: widget.topic,
+          role: widget.role,
+        ),
+      );
+    } else {
+      bloc.add(SendMessageEvent(text));
+    }
+    _textCtrl.clear();
+  }
+
+  void _scrollToBottom({bool animated = true}) {
+    if (!_scrollCtrl.hasClients) return;
+    final offset = _scrollCtrl.position.maxScrollExtent + 80;
+    if (animated) {
+      _scrollCtrl.animateTo(
+        offset,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
-    }
-  }
-
-  void _sendMessage() {
-    if (_textController.text.trim().isNotEmpty) {
-      context.read<DebateBloc>().add(
-        SendMessageEvent(_textController.text.trim()),
-      );
-      _textController.clear();
+    } else {
+      _scrollCtrl.jumpTo(offset);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat')),
+      backgroundColor: AppColor.background,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: AppColor.background,
+        elevation: 0,
+        title: const Text("Debate Room", style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          onPressed: () async {
+            FocusScope.of(context).unfocus();
+            await Future<void>.delayed(const Duration(milliseconds: 16));
+            if (context.mounted) Navigator.of(context).pop();
+          },
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
             child: BlocConsumer<DebateBloc, DebateState>(
               listener: (context, state) {
-                if (state is DebatLoaded) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => _scrollToBottom(),
-                  );
-                } else if (state is DebateError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                final bloc = context.read<DebateBloc>();
+                final hasTyping = state is DebateLoading;
+                final currentCount = bloc.messages.length + (hasTyping ? 1 : 0);
+
+                final increased = currentCount > _lastItemCount;
+                _lastItemCount = currentCount;
+
+                if (increased) {
+                  // Scroll setelah frame berikutnya biar ListView sudah punya ukuran final
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scrollToBottom(animated: true);
+                  });
                 }
               },
               builder: (context, state) {
-                if (state is DebateError) {
-                  return const Center(
-                    child: Text("Mulai debat dengan tekan Voice"),
+                final bloc = context.read<DebateBloc>();
+                final isTyping = state is DebateLoading;
+
+                // Ambil pesan + tambahkan typing bubble saat loading
+                final items = List<ChatEntity>.from(bloc.messages);
+                if (isTyping) {
+                  items.add(
+                    ChatEntity(
+                      role: 'assistant',
+                      content: '__typing__',
+                      sessionId: bloc.currentSessionId,
+                    ),
                   );
                 }
-                final messages = context.watch<DebateBloc>().messages;
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  itemCount: messages.length + (state is DebateLoading ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (state is DebateLoading && index == messages.length) {
-                      return ChatBubbleWidget(
-                        message: ChatEntity(role: "assistant", content: "..."),
-                      );
-                    }
 
-                    return ChatBubbleWidget(message: messages[index]);
-                  },
-                );
+                if (state is DebateError) {
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+
+                if (state is DebatLoaded || state is DebateLoading) {
+                  return ListView.builder(
+                    controller: _scrollCtrl,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    itemCount: items.length,
+                    itemBuilder: (context, i) {
+                      final m = items[i];
+                      if (m.role != 'user' && m.content == '__typing__') {
+                        return const TypingBubble();
+                      }
+                      return ChatBubbleWidget(message: m);
+                    },
+                  );
+                }
+
+                // Initial state
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),
           MessageInputWidget(
-            textController: _textController,
-            sendMessage: _sendMessage,
+            textController: _textCtrl,
+            sendMessage: _handleSend,
           ),
         ],
       ),
     );
   }
 }
-

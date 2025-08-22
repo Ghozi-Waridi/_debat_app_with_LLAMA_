@@ -1,14 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-class ChatEntity extends Equatable{
+class ChatEntity extends Equatable {
   final String role;
   final String content;
+  final int? sessionId;
 
-  ChatEntity({
-    required this.role,
-    required this.content,
-  });
+  const ChatEntity({required this.role, required this.content, this.sessionId});
 
   @override
-  List<Object?> get props => [role, content];
+  List<Object?> get props => [role, content, sessionId];
 }
