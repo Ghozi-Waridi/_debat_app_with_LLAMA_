@@ -1,10 +1,14 @@
 import 'package:equatable/equatable.dart';
 
+
 class SttEntity extends Equatable {
   final String text;
+  final bool speechEnable;
+  final bool isStoped;
+  final String infoText;
 
-  SttEntity({required this.text});
+  const SttEntity({required this.text, required this.isStoped, required this.speechEnable, required this.infoText});
 
   @override
-  List<Object?> get props => [text];
+  List<Object?> get props => [text, speechEnable, isStoped, infoText];
 }

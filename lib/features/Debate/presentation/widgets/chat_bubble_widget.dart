@@ -23,6 +23,7 @@ class ChatBubbleWidget extends StatelessWidget {
             bottomRight: const Radius.circular(30),
           ),
         ),
+        
         child: Text(
           message.content,
           style: TextStyle(
