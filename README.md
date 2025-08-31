@@ -105,14 +105,6 @@ python manage.py runserver
 ```bash
 # Debug mode
 flutter run
-
-# Release mode
-flutter run --release
-
-# Untuk platform spesifik
-flutter run -d android
-flutter run -d ios
-flutter run -d chrome
 ```
 
 ## 📁 Struktur Proyek
@@ -149,71 +141,7 @@ Backend menyediakan beberapa endpoint utama:
 
 - `GET /api/topics/` - Mengambil daftar topik debat
 - `POST /api/chat/` - Mengirim pesan chat
-- `GET /api/debates/` - Mengambil riwayat debat
-- `POST /api/debates/` - Membuat sesi debat baru
 
-## 🧪 Testing
-
-```bash
-# Jalankan unit tests
-flutter test
-
-# Jalankan integration tests
-flutter drive --target=test_driver/app.dart
-
-# Test backend Django
-cd backend
-python manage.py test
-```
-
-## 📱 Build untuk Production
-
-### Android APK
-
-```bash
-flutter build apk --release
-```
-
-### Android AAB (untuk Play Store)
-
-```bash
-flutter build appbundle --release
-```
-
-### iOS
-
-```bash
-flutter build ios --release
-```
-
-### Web
-
-```bash
-flutter build web --release
-```
-
-## 🤝 Kontribusi
-
-1. Fork repository ini
-2. Buat branch fitur baru (`git checkout -b fitur-amazing`)
-3. Commit perubahan Anda (`git commit -m 'Menambahkan fitur amazing'`)
-4. Push ke branch (`git push origin fitur-amazing`)
-5. Buat Pull Request
-
-## 📞 Kontak
-
-- **Developer**: Ghozi Waridi
-- **Repository**: [_debat_app_with_LLAMA_](https://github.com/Ghozi-Waridi/_debat_app_with_LLAMA_)
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- Flutter Team untuk framework yang luar biasa
-- Django Team untuk backend framework
-- Komunitas open source untuk berbagai plugin dan libraries
 
 ---
 
