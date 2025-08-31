@@ -1,5 +1,6 @@
 class ApiConfig {
-  static const String _debugBaseUrl = "http://192.168.18.106:8000";
+  // Untuk bagian debugURL ini saya dapatkan dari ifconfig fi terminal macos.
+  static const String _debugBaseUrl = "http://192.168.---.---:8000";
   static const String _releaseBaseUrl = "https://your-production-server.com";
 
   static String get baseUrl {
